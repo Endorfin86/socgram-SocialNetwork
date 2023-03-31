@@ -1,0 +1,338 @@
+{% extends 'main/base.html' %}
+
+{% load static %}
+{% block title %}{{ profile.user.username }}{% endblock %}
+
+{% block content %}
+
+
+<!-- Шапка пользователя -->
+<div id="user-header">
+    <div id="user-name">
+        {% if profile.firstname %}
+        {{ profile.firstname }} 
+        {% else %}
+        {% endif %}
+        {% if profile.lastname %}
+        {{ profile.lastname }} 
+        {% else %}
+        {% endif %}
+        
+        {% if profile.status %}
+        <div id="user-status">
+            <i class="fa-regular fa-circle-check white-text"></i> {{ profile.status }}
+        </div>
+        {% else %}
+        {% endif %}
+    </div>
+    <div id="user-photo" style="background: url('{{ profile.photo.url }}')">
+        <img src="{{ profile.photo.url }}" alt="">
+    </div>
+    <div id="user-cover">
+        <div id="user-cover-blackout"></div> 
+        <img src="{{ profile.cover.url }}" alt=""> 
+    </div>
+    {% if profile.user.username == request.user.username %}
+    <div id="user-edit">
+        <button type="button" id="btn-edit"><i class="fa-solid fa-pen-to-square white-text"></i>&nbsp;  Редактировать</button> 
+    </div>
+    {% else %} 
+    <div class="flex">
+        <div id="friend">{% for friend in friendsall %}{% if friend.friend == profile.user and friend.user == request.user.username %}Статус дружбы{% endif %}{% endfor %}</div>
+        <a href="{% url 'chat' profile.user.username %}"><div class="btn"><i class="fa-regular fa-envelope white-text"></i>&nbsp; Написать</div></a>
+    </div>
+    {% endif %}
+</div>
+<!-- Шапка пользователя (end) -->
+
+<!-- Информация о пользователе -->
+
+<div id="user-info">
+    <div id="user-content">
+
+        <div class="user-block">
+            <div class="user-block-body">
+                <h2 style="margin: 10px 0;"><i class="fa-solid fa-feather"></i>&nbsp; НЕМНОГО ОБО МНЕ</h2>
+                {% if profile.yourself %}
+                {{ profile.yourself }}
+                {% else %}
+                Информация еще не добавлена
+                {% endif %}
+            </div>
+        </div>
+
+        {% if profile.user.username == request.user.username %}
+        <div class="user-block">
+            <div class="user-block-header">
+                Добавить пост
+            </div>
+            <div class="user-block-body">
+                <form class="form-add-news" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ formadd }}
+                    <button type="submite">Добавить</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        {% endif %}
+
+        <div id="posts">
+        {% for new in mynews %}
+        <div id="post{{ new.id }}" class="post">
+            <div class="post-header">
+                <p class="post-user">
+                    <a href="{% url 'profile' new.athor %}">
+                        <img src="{{ new.athor.userprofile.photo.url }}" alt="">&nbsp; {{ new.athor }}
+                    </a>
+                </p>
+                <p class="white-text">
+                    {{ new.time }}{% if profile.user.username == request.user.username %} &nbsp;&nbsp;<button id="{{ new.id }}" class="btn-opacity" onClick="delpost(this.id)"><i class="fa-solid fa-xmark white-text"></i></button>{% else %}{% endif %}
+                </p>
+            </div>
+            <div class="post-body">
+                {% if 'default-news.img' in new.images.url %}
+                {% else %}
+                <img style="margin-bottom: 10px;" src="{{ new.images.url }}" alt=""><br>
+                {% endif %}
+                {% if new.text %}
+                {{ new.text|safe }}
+                <br>
+                {% else %}
+                {% endif %}
+                {% if 'default-news.file' in new.files.url %}
+                {% else %}
+                <br><br><a href="{{ new.files.url }}"><button><i class="fa-solid fa-floppy-disk white-text"></i>&nbsp; Скачать файл</button></a>
+                {% endif %}
+                <div style="display: flex; align-items: center;">
+                    <div id="{{ new.id }}" class="like" onClick="show_comments(this.id)">
+                        <button type="button" class="btn-like"><i class="fa-solid fa-comment"></i> {{ new.comment }}</button>
+                    </div>
+                    
+                    <div id="{{ new.id }}" class="like" onClick="like(this.id)">
+                        <button type="button" class="btn-like"><i class="fa-solid fa-heart"></i> <span id="l{{ new.id }}">{{ new.like }}</span></button>
+                    </div>
+                    {% if profile.user.username == request.user.username %}
+                    <div style="display: flex; align-items: center;">
+                    {% for like in likes %}
+                    {% if like.new.pk == new.pk %}
+                    <a href="{% url 'profile' like.user %}">
+                    <div style="margin: 20px 0 0 5px;">
+                    <img title="{{ like.user }}" style="width: 20px; height: 20px; border-radius: 50%;" src="{{ like.user.userprofile.photo.url }}" alt="">
+                    </div>
+                    </a>
+                    {% else %}
+                    {% endif %}
+                    {% endfor %}
+                    </div>
+                    {% else %}
+                    {% endif %}
+                </div>
+                
+                <div id="form-comments{{ new.id }}" style="display: none">
+             <!-- Форма добавления комментариев -->
+             <div style="display:block; margin-top: 20px;">
+                <form class="form-control-comm" action="{% url 'addcom' %}" method="POST">
+                    {% csrf_token %}
+                    {{ comformadd.text }}
+                    <select class="hide" name="new" required="" id="id_new">
+                        <option value="{{ new.pk }}" selected="selected">{{ new }}</option>
+                    </select>
+                    <select class="hide" name="user" required="" id="id_user">
+                        <option value="{{ request.user.pk }}" selected="selected">{{ request.user.username }}</option>
+                    </select>
+    
+                    <button type="submit">Добавить комментарий</button>
+                </form>
+            </div>
+                        <!-- Комментарии -->
+                        {% if comments %}
+                        {% for comm in comments %}
+                        {% if comm.new.pk == new.pk %}
+                        <div style="margin-top: 20px; padding: 10px; background-color: #f7f7f7">
+                            <a href="{% url 'profile' comm.user %}">
+                            <b style="margin-bottom: 10px; display: flex; align-items: center;"><img style="margin-right: 5px; width: 20px; height: 20px; border-radius: 50px;" src="{{ comm.user.userprofile.photo.url }}" alt=""> {{ comm.user }}</b>
+                            </a>
+                            {{ comm.text }}<br>
+                            <span style="color: #999999; font-size: 14px;">
+                                {{ comm.time }}
+                            </span>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+            
+            </div>
+
+        </div>
+        {% endfor %}
+        </div>
+
+    </div>
+    <div id="user-sidebar">
+
+        {% if profile.phone %}
+        <div class="user-block">
+            <div class="user-block-header">
+                Мой телефон
+            </div>
+            <div class="user-block-body">
+                {{ profile.phone }}
+            </div>
+        </div>
+        {% else %}
+        {% endif %}
+
+        {% if profile.user.email %}
+        <div class="user-block">
+            <div class="user-block-header">
+                Моя почта
+            </div>
+            <div class="user-block-body">
+                <span style="word-break: break-all;">
+                    {{ profile.user.email }}
+                </span>
+            </div>
+        </div>
+        {% else %}
+        {% endif %}
+
+        <div id="fr" class="user-block">
+            <div class="user-block-header">
+                Друзья
+            </div>
+            <div class="user-block-body">
+                    
+                    {% if friends %}
+                    {% for friend in friends %}
+                
+                    <div id="link{{ friend.friend.pk}}" style="position: relative;">
+                        <a href="{% url 'profile' friend.friend %}">
+                            <div class="friend-line">
+                                <img src="{{ friend.friend.userprofile.photo.url }}" alt=""> <span style="font-size: 14px;">{{ friend.friend.userprofile.firstname }} {{ friend.friend.userprofile.lastname }}</span> 
+                            </div>
+                        </a>
+                        {% if profile.user.username == request.user.username %}
+                        <button style="position: absolute; top: 0px; left: -5px;" class="button-white" type="button" id="{{ friend.friend.pk }}" onClick="delfriendprofile(this.id)"><i class="fa-solid fa-xmark"></i></button>
+                        {% else %}
+                        {% endif %}
+                    </div>
+                    
+                    
+                    {% endfor %}
+                    {% else %}
+                    <span style="font-size: 14px;">Пока нет друзей</span>
+                    {% endif %}
+            </div>
+        </div>
+
+
+        <div class="user-block">
+            <div class="user-block-header">
+                Статистика (Beta)
+            </div>
+            <div class="user-block-body">
+               <canvas id="MyCanvas" style="width: 100%;">
+               </canvas>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<!-- Информация о пользователе (end) -->
+
+
+<!-- Всплывающее окно редактирования пользователя -->
+    <div id="form-edit">
+        <div style="position: relative">
+            <form class="form-control form-input100" method="post" enctype="multipart/form-data">
+                <h1>Редактирование страницы</h1><br>
+                {% csrf_token %}
+                <div style="display: flex; width: 100%">
+                    <div style="width: 49%; margin-right: 1%;">
+                        Логин{{ form.username }}Почта{{ form.email }}Номер телефона{{ formprofile.phone }}Имя{{ formprofile.firstname }}Фамилия{{ formprofile.lastname }}Фото{{ formprofile.photo }}Обложка{{ formprofile.cover }}
+                    </div>
+                    <div style="width: 49%; margin-left: 1%;">
+                        Статус{{ formprofile.status }}О себе{{ formprofile.yourself }}<div class="hide">{{ formprofile.slug }}</div>
+                    </div>
+                </div>
+                 <button id="saveform" type="submit">Обновить</button>
+            </form>
+            <button id="btn-close" type="button"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+</div>
+<div id="bg-form-edit"></div>
+
+<div class="hide" id="iduser">{{ user.id }}</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="{% static 'user/js/showcomments.js' %}"></script>
+<script src="{% static 'user/js/edituser.js' %}"></script>
+<script src="{% static 'user/js/posting.js' %}"></script>
+<script src="{% static 'user/js/friends.js' %}"></script>
+
+<script>
+// Отслеживание кнопки добавить/удалить из друзей
+var frnd = document.getElementById("friend").innerHTML
+if(frnd.length > 0) {
+document.getElementById("friend").innerHTML = '<button id={{ profile.user.pk }} type="button" onClick="delfriend(this.id)"><i class="fa-solid fa-user-minus white-text"></i>&nbsp; Удалить из друзей</button>'   
+}else if (frnd.length == 0) {
+document.getElementById("friend").innerHTML = '<button id={{ profile.user.pk }} type="button" onClick="addfriend(this.id)"><i class="fa-solid fa-user-plus white-text"></i>&nbsp; Добавить в друзья</button>'
+}else{} 
+</script>
+
+<script>
+
+var c = document.getElementById('MyCanvas');
+var ctx = c.getContext("2d");
+var col = c.getContext("2d");
+
+coluser = {{ coluser }} * 10
+likeuser = {{ likeuser }} * 10
+
+// рисуем линии //////
+ctx.lineWidth = "20";
+ctx.moveTo (0, 20);
+ctx.lineTo(coluser, 20);
+ctx.strokeStyle = "#0099ff";
+ctx.stroke();
+
+// Пишем текст //////
+ctx.font = "20px Arial";
+ctx.fillText("Пользователи" + ' ' + (coluser / 10), 0, 50);
+
+col.lineWidth = "20";
+col.moveTo (0, 90);
+col.lineTo(likeuser, 90);
+col.strokeStyle = "#0099ff";
+col.stroke();
+
+col.font = "20px Arial";
+col.fillText("Лайки" + ' ' + (likeuser / 10), 0, 120);
+
+
+
+
+
+
+
+
+
+
+// col.font = "25px sans-serif";
+// col.fillText("{{ coluser }}", 180, 30);
+
+// рисуем фон //////
+// var grd = ctx.createLinearGradient(0, 0, 200, 100);
+// grd.addColorStop(0, "blue");
+// grd.addColorStop(1, "red");
+// ctx.fillStyle = grd;
+// ctx.fillRect(0, 0, 300, 500);
+
+</script>
+
+{% endblock %}

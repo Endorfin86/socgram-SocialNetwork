@@ -1,0 +1,55 @@
+.input-chat {
+   border: 0px; 
+   padding: 10px 10px;
+   width: 100%;
+   outline: none;
+}
+
+.input-chat-disabled {
+  border: 0px; 
+  padding: 10px 10px;
+  width: 100%;
+  outline: none;
+  background-color: white;
+}
+
+.sender {
+    color: #555555;
+    margin-bottom: 10px;
+}
+
+.friend {
+    color: #555555;
+    margin-bottom: 10px;
+}
+
+.photo-chat {
+    margin-right: 5px; 
+    width: 30px; 
+    height: 30px; 
+    border-radius: 50px;
+}
+
+.user-block-chat {
+  background-color: #eeeeee;
+  padding: 0 20px 20px 20px;
+  border-top: 20px solid #eeeeee;
+}
+
+.mess-overflow {
+    overflow-y: scroll;
+    min-height: 70vh; 
+    max-height: 70vh;
+
+}
+
+.mess-overflow::-webkit-scrollbar {
+    width: 12px;               /* ширина scrollbar */
+  }
+  .mess-overflow::-webkit-scrollbar-track {
+    background: #eeeeee;        /* цвет дорожки */
+  }
+  .mess-overflow::-webkit-scrollbar-thumb {
+    background-color: #777777;    /* цвет плашки */
+    border: 5px solid #eeeeee;  /* padding вокруг плашки */
+  }

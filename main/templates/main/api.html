@@ -1,0 +1,49 @@
+{% extends 'main/base.html' %}
+
+{% block title %}API{% endblock %}
+
+{% block content %}
+    <h1>
+        API сайта
+    </h1>
+
+
+
+    <div class="post">
+        <div class="post-header">
+            <p class="post-user">
+                Авторизация и получение токена
+            </p>
+        </div>
+        <div class="post-body">
+            <p style="margin-bottom: 5px;">
+                Делаем post-запрос на <span style="color: #0099ff">http://localhost:5000/auth/token/login/</span>
+            </p>
+            <p style="margin-bottom: 10px;">
+                В <b>data</b> прописываем существующий логин и пароль
+            </p>
+            <p>
+                <pre style="background: rgb(255, 244, 147); padding: 20px; border-left: 10px solid #d4c965;">
+data = {
+    'username': '<логин>',
+    'password': '<пароль>',
+}</pre>
+            </p>
+            <p style="margin: 10px 0;">
+                Получается следующий код
+            </p>
+            <p>
+                <pre style="background: #fff494; padding: 20px; border-left: 10px solid #d4c965;">
+data = {
+    'username': 'mylogin',
+    'password': '123456',
+}
+url = 'http://localhost:5000/auth/token/login/'
+token = requests.post(url, data=data)</pre>
+            </p>
+        </div>
+    </div>
+
+
+
+{% endblock %}

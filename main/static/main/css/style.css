@@ -1,0 +1,349 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;800&display=swap');
+@import url('userpage.css');
+@import url('friends.css');
+@import url('chat.css');
+
+* {
+    padding: 0px;
+    margin: 0px;
+    font-family: 'Rubik', sans-serif;
+    font-size: 16px;
+    color: #555555;
+}
+
+.white-text {
+    color: white;
+}
+
+a {
+    text-decoration: none;
+    color: #555555;
+}
+
+a:hover {color: #0099ff;}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 30px;
+    text-transform: uppercase;
+}
+
+img {
+    width: 100%;
+}
+
+#messages, #advice {
+    position: fixed; 
+    bottom: 20px; 
+    left: -300px; 
+    padding: 20px; 
+    color: white; 
+    background-color: #0099ff; 
+    font-size: 14px; 
+    max-width: 250px;
+    animation-name: mess;
+    animation-duration: 3s;
+    animation-delay: .5s;
+}
+
+#advice {
+    display: none;
+    animation-fill-mode: both;
+    animation-name: adv;
+    animation-delay: 0s;
+}
+
+.deadvice {
+    color: white;
+    position: relative; 
+}
+
+.deadvice > a{
+    color: white;
+}
+
+.deadvice > a:hover{
+    color: yellow;
+}
+
+.exit {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    padding: 4px 8px;
+    z-index: 5;
+}
+
+.exit:hover {
+    background-color:#007fd3;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+#ani {
+    animation-name: ani; 
+    animation-duration: 2s;
+    animation-delay: 1s;
+    z-index: 1; 
+    position: absolute; 
+    top: 0px; 
+    left: 0px; 
+    right: 0px; 
+    bottom: 0px; 
+    background-color:#0099ff;
+    animation-iteration-count: infinite;
+}
+
+@keyframes mess {
+    0% {left: -300px; }
+    25% {left: 20px; }
+    75% {left: 20px; }
+    100% {left: -300px; }
+}
+
+@keyframes adv {
+    0% {left: -300px; }
+    25% {left: 20px; }
+    75% {left: 20px; }
+    100% {left: 20px; }
+}
+
+@keyframes ani {
+    0% {transform: scaleY(100%) scaleX(100%); opacity: 0.3;}
+    25% {transform: scaleY(140%) scaleX(110%); opacity: 0;}
+    50% {transform: scaleY(100%) scaleX(100%); opacity: 0;}
+    100% {transform: scaleY(100%) scaleX(100%); opacity: 0;}
+}
+
+.btn-opacity {
+    background: none;
+    padding: 5px 10px;
+    margin-right: -10px;
+}
+
+.btn-opacity:hover {
+    background: #666666;
+    padding: 5px 10px;
+    margin-right: -10px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #eeeeee;
+    padding: 15px 50px;
+    z-index: 45;
+    position: relative;
+}
+
+#logo {
+    font-size: 20px;
+    font-weight: 800;
+}
+
+main {
+    display: flex;
+    justify-content: start;
+    padding: 50px 20%;
+}
+
+@media(max-width: 1280px) {
+    main {
+        padding: 50px 5%;
+    }
+}
+
+.main-noauth {
+    display: flex;
+    justify-content: start;
+    padding: 0px;
+    background: url(../img/fon.jpg);
+    background-size: cover;
+    height: 100vh;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+}
+
+aside {
+    width: 30%;
+
+}
+
+#section-aside {
+    background-color: #eeeeee;
+    padding: 20px;
+    top: 20px;
+}
+
+#section-aside > p {margin-bottom: 20px;}
+
+#section-aside > p i {width: 20px;}
+
+#section-aside p:last-child {margin-bottom: 0px;}
+
+.section-aside {
+    background-color: #eeeeee;
+    padding: 20px;
+    top: 20px;
+}
+
+content {width: 70%}
+
+#section-content {
+    padding-left: 20px;
+}
+
+#content-noauth {width: 100%}
+
+#section-content-noauth {
+    display: flex;
+    align-items:center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.form-control input, .form-control textarea {
+    border: 1px solid silver;
+    background-color: white;
+    padding: 10px;
+    display: block;
+    margin-bottom: 20px;
+    outline: none;
+    box-sizing: border-box;
+    width: 50%;
+}
+
+.form-input100 input, .form-input100 textarea {
+    width: 100%;
+}
+
+.form-control label {
+    display: block;
+    font-size: 12px;
+    color: #ffffff;
+}
+
+.form-control textarea {
+    resize: none;
+    height: max-content;
+}
+
+.form-control-comm textarea {
+    border: 0px;
+    padding: 10px;
+    display: block;
+    margin-bottom: 70px;
+    outline: none;
+    resize: none;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100px;
+}
+
+.form-control-comm button {
+    float: right;
+    display: block;
+    margin-top: -60px;
+}
+
+button, .btn {
+    background-color: #0099ff;
+    border: 0px;
+    color: white;
+    padding: 10px;
+}
+
+button:hover, .btn:hover {
+    background-color: #0077ff;
+    cursor: pointer;
+}
+
+.button-none {
+    background: none;
+    border: 0px;
+    color: #555555;
+    padding: 0px;
+}
+
+.button-none:hover {
+    cursor: pointer;
+    background: none;
+}
+
+.button-white {
+    background: white;
+    border: 0px;
+    color: #555555;
+    padding: 0px 3px;
+    border-radius: 50%;
+    font-size: 4px;
+    opacity: 0.7;
+    transition: all .5s;
+
+}
+
+.button-white:hover {
+    cursor: pointer;
+    background: white;
+    opacity: 1;
+    transform: scaleX(110%) scaleY(115%) rotate(360deg);
+}
+
+.errorlist {
+    list-style: none;
+    color: red;
+}
+
+.hide {
+    position: absolute;
+    left: -9999px;
+}
+
+.flex {
+    display: flex;
+    align-items: center;
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flex-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100%;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px; 
+    background: url(../img/fon.jpg);
+    background-size: cover;
+    background-position: center;
+}
+
+.box {
+    border: 1px solid #eeeeeeab;
+    border-radius: 10px;
+    background-color: #eeeeee6b;
+    backdrop-filter: blur(15px);
+    padding: 50px;
+    width: 20%;
+    transition: all .5s;
+}
+
+.box:hover {
+    backdrop-filter: blur(0px);
+}
+
+.box > h1 {
+    color: white;
+}

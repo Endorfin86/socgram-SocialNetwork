@@ -1,0 +1,311 @@
+#user-header {
+    position: relative; 
+    background-color: #eeeeee; 
+    height: 230px;
+}
+
+#user-name {
+    position: absolute; 
+    left: 20px; 
+    top: 70px; 
+    font-size: 30px; 
+    z-index: 10; 
+    font-weight: 800; 
+    color: white
+}
+
+#user-status {
+    font-size: 18px; 
+    font-weight: 300; 
+    margin-top: 5px; 
+    color: white
+}
+
+#user-photo {
+    overflow: hidden; 
+    height: 150px; 
+    width: 150px; 
+    position: absolute; 
+    z-index: 10; 
+    right: 50px; 
+    top: 50px; 
+    border: 5px solid #eeeeee;
+}
+
+#user-cover {
+    overflow: hidden; 
+    height: 150px; 
+    width: 100%; 
+    position: relative;
+}
+
+#user-cover-blackout {
+    height: 150px; 
+    width: 100%; 
+    background-color: rgb(0, 0, 0); 
+    z-index: 5; 
+    position: absolute; 
+    opacity: 0.5;
+}
+
+#user-edit {
+    position: absolute; 
+    left: 20px; 
+    bottom: 20px;
+}
+
+#friend {
+    padding: 20px;
+}
+
+#user-info {
+    display: flex;
+    margin-top: 20px;
+}
+
+#user-content {
+    width: 70%;
+    margin-right: 3%;
+}
+
+#user-sidebar {
+    width: 27%;
+    position: sticky; 
+    top: 20px;
+}
+
+.user-block {
+    margin-bottom: 20px;
+}
+
+.user-block-header {
+    background-color: #555555;
+    color: white;
+    padding: 10px 20px;
+}
+
+.user-block-body {
+    background-color: #eeeeee;
+    padding: 20px;
+}
+
+.user-block-body div:nth-last-child(1) > a > div {
+    margin-bottom: 0px;
+}
+
+
+#form-edit {
+    position: fixed;
+    width: 76%;
+    left: 10%;
+    padding: 2%;
+    top: 70px;
+    background-color: #eeeeee;
+    z-index: 50;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.70);
+    display: none;
+    animation-name: ident;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-delay: 0.5s;
+
+
+}
+
+#bg-form-edit {
+    background-color: rgba(0, 0, 0, 0.555);
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    display: none;
+    z-index: 45;
+    opacity: 0;
+    animation-name: fon;
+    animation-duration: 0.5s;
+    animation-fill-mode: both;
+}
+
+@keyframes fon {
+    from {opacity: 0;}
+    to {opacity: 1;}
+    
+}
+
+@keyframes ident {
+    from {top: -100%;}
+    to {top: 70px;}
+    
+}
+
+#btn-close {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: #eeeeee;
+    padding: 5px 10px;
+}
+
+#btn-close:hover {
+    background-color: #d3d3d3;
+}
+
+.form-add-news input, .form-add-news textarea, .form-add-news select{
+    outline: none;
+    box-sizing: border-box;
+    display: block;
+    border: 1px solid silver;
+    padding: 10px;
+    width: 100%;
+}
+
+.form-add-news label {
+    display: block;
+}
+.form-add-news label[for="id_text"] {
+    display: none;
+}
+
+.form-add-news label[for="id_images"] {
+    /* display: inline-block; */
+    float: right;
+    font-size: 0px;
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+    background: url('../img/img.png') no-repeat;
+    background-size: contain;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+.form-add-news label[for="id_files"] {
+    /* display: inline-block; */
+    float: right;
+    font-size: 0px;
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+    background: url('../img/file.png') no-repeat;
+    background-size: contain;
+    margin-top: 5px;
+}
+
+.form-add-news label[for="id_athor"] {
+    display: none;
+}
+
+.form-add-news textarea {
+    resize: vertical;
+    height: 40px;
+    min-height: 40px;
+    max-height: 300px;
+    border: 0px;
+    transition: all .5s;
+    resize: none;
+}
+
+.form-add-news textarea:focus {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-add-news button {
+    display: block;
+    margin-top: 10px;
+}
+
+.form-add-news input#id_images {
+    display: none;
+}
+.form-add-news input#id_files {
+    display: none;
+}
+
+.post {
+    background-color: #eeeeee; 
+    margin-bottom: 20px;
+}
+
+.post-header {
+    padding: 10px 20px; 
+    background: #555555; 
+    color: white; 
+    align-items: center; 
+    display: flex; 
+    justify-content: space-between;
+}
+
+.post-user {
+    color: white; 
+    display: flex; 
+    align-items: center;
+}
+
+.post-user > a {
+    color: white;
+    display: flex; 
+    align-items: center;
+}
+
+.post-user > a img {
+    border-radius: 50%; 
+    width: 20px; 
+    height: 20px; 
+    display: inline-block;
+}
+
+.post-body {
+    padding: 20px;
+}
+
+.like {
+    background-color: #dddddd;
+    padding: 8px 10px;
+    width: max-content;
+    border-radius: 20px;
+    margin-top: 20px;
+    margin-right: 10px;
+    display: inline-block;
+}
+
+.like:hover {
+    background-color: #b4e1ff;
+    padding: 8px 10px;
+    width: max-content;
+    border-radius: 20px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.btn-like {
+    background: none;
+    padding: 0px;
+    color: #555555;
+}
+
+.btn-like:hover {
+    background: none;
+}
+
+.friend-line {
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 10px;
+}
+
+.friend-line:hover {
+    background-color: #dddddd;
+    padding: 0px;
+    border-radius: 50px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.friend-line img {
+    border-radius: 200px; 
+    height: 40px; 
+    width: 40px; 
+    margin-right: 5px;
+}

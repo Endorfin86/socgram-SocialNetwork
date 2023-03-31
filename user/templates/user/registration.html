@@ -1,0 +1,18 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Регистрация нового пользователя{% endblock %}
+
+{% block content %}
+<div class="flex-box">
+    <div class="box">
+    <h1>
+        Регистрации нового пользователя
+    </h1>
+    <form class="form-control form-input100" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <center><button type="submit">Зарегистрироваться</button></center>
+    </form>
+    </div>
+</div>
+{% endblock %}

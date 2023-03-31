@@ -1,0 +1,144 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Понравившиеся посты{% endblock %}
+
+{% block content %}
+    <div class="flex">
+        <i style="margin: 0 10px 20px 0;" class="fa-solid fa-heart"></i> <h1>Избранное</h1> 
+    </div>
+    
+    {% for new in news %}
+    <div id="p{{ new.new.id }}" class="post">
+        <div class="post-header">
+            <p class="post-user">
+                <a href="{% url 'profile' new.new.athor %}">
+                    <img src="{{ new.new.athor.userprofile.photo.url }}" alt="">&nbsp; {{ new.new.athor }}
+                </a>
+            </p>
+            <p class="white-text">
+                {{ new.new.time }}
+            </p>
+        </div>
+        <div class="post-body">
+            {% if 'default-news.img' in new.new.images.url %}
+            {% else %}
+            <img style="margin-bottom: 10px;" src="{{ new.new.images.url }}" alt=""><br>
+            {% endif %}
+            {{ new.new.text|safe }}
+            {% if 'default-news.file' in new.new.files.url %}
+            {% else %}
+            <br><br><a href="{{ new.new.files.url }}"><button><i class="fa-solid fa-floppy-disk white-text"></i>&nbsp; Скачать файл</button></a>
+            {% endif %}
+            
+            <!-- Блоки лайк и комментарий> -->
+
+            {% if user.is_authenticated %}
+            <div style="display: block;">
+            <div id="{{ new.new.id }}" class="like" onClick="like(this.id)">
+                <button type="button" class="btn-like"><i class="fa-solid fa-heart"></i> <span id="l{{ new.new.id }}">{{ new.new.like }}</span></button>
+            </div>
+            <div id="{{ new.new.id }}" class="like" onClick="show_comments(this.id)">
+                <button type="button" class="btn-like"><i class="fa-solid fa-comment"></i> {{ new.new.comment }}</button>
+            </div><br>
+            </div>
+            {% else %}
+            <div id="{{ new.new.id }}" class="like" onClick="auth()">
+                <button type="button" class="btn-like"><i class="fa-solid fa-heart"></i> <span id="l{{ new.new.id }}">{{ new.new.like }}</span></button>
+            </div>
+            {% endif %}
+
+            <div id="form-comments{{ new.new.id }}" style="display: none">
+             <!-- Форма добавления комментариев -->
+             <div style="display:block; margin-top: 20px;">
+                <form class="form-control-comm" method="post">
+                    {% csrf_token %}
+                    {{ comformadd.text }}
+                    <select class="hide" name="new" required="" id="id_new">
+                        <option value="{{ new.new.pk }}" selected="selected">{{ new.new }}</option>
+                    </select>
+                    <select class="hide" name="user" required="" id="id_user">
+                        <option value="{{ request.user.pk }}" selected="selected">{{ request.user.username }}</option>
+                    </select>
+    
+                    <button type="submit">Добавить комментарий</button>
+                </form>
+            </div>
+
+            <!-- Комментарии -->
+
+            {% for comm in comments %}
+            {% if comm.new.pk == new.new.pk %}
+            <div style="margin-top: 20px; padding: 10px; background-color: #f7f7f7">
+                <a href="{% url 'profile' comm.user %}">
+                <b style="margin-bottom: 10px; display: flex; align-items: center;"><img style="margin-right: 5px; width: 20px; height: 20px; border-radius: 50px;" src="{{ comm.user.userprofile.photo.url }}" alt=""> {{ comm.user }}</b>
+                </a>
+                {{ comm.text }}<br>
+                <span style="color: #999999; font-size: 14px;">
+                    {{ comm.time }}
+                </span>
+            </div> 
+            {% endif %}
+
+            {% endfor %}
+            </div>
+
+
+
+        </div>
+    </div>
+    {% endfor %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script>
+        // Комментарии
+        function show_comments(post_id) {
+            post = '#form-comments' + post_id
+            $(post).slideToggle();
+        }
+
+
+
+        // Лайки
+        function like(click){
+        let count = 'l' + click
+        let likecount = document.getElementById(count).innerHTML
+        $.ajax ({
+            type: "GET",
+            url: '/like/',
+            data: {
+                "post_id": click,
+            },
+            dataType: 'text',
+            cache: false,
+            success: function(data) {
+                if (data == 'minus') {
+                    console.log('Лайк снят');
+                    likeint = parseInt(likecount) - 1
+                    document.getElementById(count).innerHTML = likeint
+                    let pid = '#p' + click
+                    $(pid).slideUp()
+                    }
+                else {
+                    console.log('Лайк засчитан');
+                    likeint = parseInt(likecount) + 1
+                    document.getElementById(count).innerHTML = likeint
+                    }
+                }
+            });
+        }
+
+        // Запрет лайков и всплывающее сообщение регистрации или логин
+        function auth(){
+            let advice = document.getElementById('advice')
+            advice.style.display = 'block'
+        }
+        function exitadv(){
+            let exitadv = document.getElementById('exitadv')
+            let advice = document.getElementById('advice')
+            advice.style.display = 'none'
+        }
+
+
+    </script>
+
+    {% endblock %}

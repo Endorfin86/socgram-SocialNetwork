@@ -1,0 +1,167 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+    <h1>Лента новостей</h1>
+    
+    {% for new in news %}
+    <div class="post">
+        <div class="post-header">
+            <p class="post-user">
+                <a href="{% url 'profile' new.athor %}">
+                <img src="{{ new.athor.userprofile.photo.url }}" alt="">&nbsp; {{ new.athor }}
+                </a>
+            </p>
+            <p class="white-text">
+                {{ new.time }}
+            </p>
+        </div>
+        <div class="post-body">
+            {% if 'default-news.img' in new.images.url %}
+            {% else %}
+            <img style="margin-bottom: 10px;" src="{{ new.images.url }}" alt=""><br>
+            {% endif %}
+            {{ new.text|safe }}
+            {% if 'default-news.file' in new.files.url %}
+            {% else %}
+            <br><br><a href="{{ new.files.url }}"><button><i class="fa-solid fa-floppy-disk white-text"></i>&nbsp; Скачать файл</button></a>
+            {% endif %}
+            
+            <!-- Блоки лайк и комментарий> -->
+
+            {% if user.is_authenticated %}
+            <div style="display: block;">
+            <div id="{{ new.id }}" class="like" onClick="like(this.id)">
+                <button type="button" class="btn-like"><i class="fa-solid fa-heart"></i> <span id="l{{ new.id }}">{{ new.like }}</span></button>
+            </div>
+            <div id="{{ new.id }}" class="like" onClick="show_comments(this.id)">
+                <button type="button" class="btn-like"><i class="fa-solid fa-comment"></i> {{ new.comment }}</button>
+            </div><br>
+            </div>
+            {% else %}
+            <div style="display: block;">
+            <div id="{{ new.id }}" class="like" onClick="auth()">
+                <button type="button" class="btn-like"><i class="fa-solid fa-heart"></i> <span id="l{{ new.id }}">{{ new.like }}</span></button>
+            </div>
+            <div id="{{ new.id }}" class="like" onClick="auth()">
+                <button type="button" class="btn-like"><i class="fa-solid fa-comment"></i> {{ new.comment }}</button>
+            </div>
+            </div>
+            {% endif %}
+
+            <div id="form-comments{{ new.id }}" style="display: none">
+             <!-- Форма добавления комментариев -->
+             <div style="display:block; margin-top: 20px;">
+                <form class="form-control-comm" method="post">
+                    {% csrf_token %}
+                    {{ comformadd.text }}
+                    <select class="hide" name="new" required="" id="id_new">
+                        <option value="{{ new.pk }}" selected="selected">{{ new }}</option>
+                    </select>
+                    <select class="hide" name="user" required="" id="id_user">
+                        <option value="{{ request.user.pk }}" selected="selected">{{ request.user.username }}</option>
+                    </select>
+    
+                    <button type="submit">Добавить комментарий</button>
+                </form>
+            </div>
+
+            <!-- Комментарии -->
+
+            {% for comm in comments %}
+            {% if comm.new.pk == new.pk %}
+            <div style="margin-top: 20px; padding: 10px; background-color: #f7f7f7">
+                <a href="{% url 'profile' comm.user %}">
+                <b style="margin-bottom: 10px; display: flex; align-items: center;"><img style="margin-right: 5px; width: 20px; height: 20px; border-radius: 50px;" src="{{ comm.user.userprofile.photo.url }}" alt=""> {{ comm.user }}</b>
+                </a>
+                {{ comm.text }}<br>
+                <span style="color: #999999; font-size: 14px;">
+                    {{ comm.time }}
+                </span>
+            </div> 
+            {% endif %}
+
+            {% endfor %}
+            </div>
+
+
+
+        </div>
+    </div>
+    {% endfor %}
+
+    <div id="advice" class="advice">
+        <div>
+            <div class="deadvice" style="z-index: 4;">
+                <a href="{% url 'registration' %}">Зарегистрируйтесь</a> или <a href="{% url 'login' %}">авторизируйтесь</a>
+                <div id="exitadv" class="exit" onClick="exitadv()"><i class="fa-solid fa-xmark white-text"></i></div>
+            </div>
+        </div>
+        <div id="ani"></div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script>
+        // Комментарии
+        function show_comments(post_id) {
+            post = '#form-comments' + post_id
+            $(post).slideToggle();
+        }
+
+
+
+        // Лайки
+        function like(click){
+        let count = 'l' + click
+        let likecount = document.getElementById(count).innerHTML
+        $.ajax ({
+            type: "GET",
+            url: 'like/',
+            data: {
+                "post_id": click,
+            },
+            dataType: 'text',
+            cache: false,
+            success: function(data) {
+                if (data == 'minus') {
+                    console.log('Лайк снят');
+                    likeint = parseInt(likecount) - 1
+                    document.getElementById(count).innerHTML = likeint
+                    }
+                else {
+                    console.log('Лайк засчитан');
+                    likeint = parseInt(likecount) + 1
+                    document.getElementById(count).innerHTML = likeint
+                    }
+                }
+            });
+        }
+
+        // Запрет лайков и всплывающее сообщение регистрации или логин
+        function auth(){
+            let advice = document.getElementById('advice')
+            advice.style.display = 'block'
+        }
+        function exitadv(){
+            let exitadv = document.getElementById('exitadv')
+            let advice = document.getElementById('advice')
+            advice.style.display = 'none'
+        }
+
+
+    </script>
+{% else %}
+<div class="flex-box">
+    <div class="box">
+   
+        <h1 style="text-align: center;">Что будем делать?</h1><br>
+        <a href="{% url 'log-in' %}"><button style="width: 100%" class="btn">Авторизируемся в профиле</button></a>
+        <br><br><br><h1 style="text-align: center;">или</h1><br>
+        <a href="{% url 'registration' %}"><button style="width: 100%" class="btn">Зарегистрируем нового пользователя</button></a>
+  
+    </div>
+</div>
+{% endif %}
+{% endblock %}

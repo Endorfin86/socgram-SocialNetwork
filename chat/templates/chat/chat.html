@@ -1,0 +1,170 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Сообщения{% endblock %}
+
+{% block content %}
+
+<!-- заглушка при переходе на раздел мои сообщения -->
+{% if request.user.username == friend %}
+<div class="flex">
+
+    <div style="width: 70%;">
+        <!-- Здесь появляются сообщения -->
+        <div id="chat-messages" class="user-block-body mess-overflow flex">
+            <div style="text-align: center; width: 100%;">
+                Выберите собеседника
+            </div>
+        </div>
+
+        <!-- Форма отправки сообщения -->
+        <div class="user-block-body">
+        <form class="flex">
+            <input class="input-chat-disabled" type="text" name="content" placeholder="Выберите собеседника..." disabled>
+            <button id="chat-submit" disabled>Отправить</button>
+        </form>
+        </div>
+    </div>
+
+    <!-- Список друзей -->
+    <div style="width: 30%; align-self: start;">
+        <div class="user-block-body" style="margin-left: 20px">               
+            {% if myfriends %}
+            {% for friend in myfriends %}
+            <div id="link{{ friend.friend.pk}}" style="position: relative;">
+                <a href="{% url 'chat' friend.friend %}">
+                    <div class="friend-line">
+                        <img src="{{ friend.friend.userprofile.photo.url }}" alt=""> <span style="font-size: 14px;">{{ friend.friend.userprofile.firstname }} {{ friend.friend.userprofile.lastname }}</span> 
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+            {% else %}
+            <span style="font-size: 14px;">Пока нет друзей</span>
+            {% endif %}
+        </div>
+    </div>  
+
+</div>
+<!-- заглушка при переходе на раздел мои сообщения (end) -->
+{% else %}
+
+<div class="flex">
+
+    <div style="width: 70%;">
+        <!-- Здесь появляются сообщения -->
+        <div id="chat-messages" class="user-block-chat mess-overflow">
+            {% for mess in chat %}
+            <!-- Отфильтровываем все сообщения которые не входят в диалог отправителя и получателя -->
+            {% if mess.sender == request.user.username and mess.friend == friend or mess.sender == friend and mess.friend == request.user.username  %}
+            {% if mess.sender == request.user.username %}
+            <div class="sender flex"><div style="align-self:flex-start"><img class="photo-chat" src="{{ request.user.userprofile.photo.url }}" alt=""></div><div style="align-self:flex-start"><b>{{ mess.sender }}</b> {{ mess.create|date:"G:i" }}<br> {{ mess.message }}</div></div>
+            {% else %}
+            <div class="friend flex"><div style="align-self:flex-start"><img class="photo-chat" src="{{ thisfriend.userprofile.photo.url }}" alt=""></div><div style="align-self:flex-start"><b>{{ mess.sender }}</b> {{ mess.create|date:"G:i" }}<br> {{ mess.message }}</div></div>
+            {% endif %}
+            {% else %}
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- Форма отправки сообщения -->
+        <div class="user-block-body">
+        <form class="flex" method="post" action=".">
+            <input id="chat-input" class="input-chat" type="text" name="content" placeholder="Введите сообщение">
+            <button id="chat-submit">Отправить</button>
+        </form>
+        </div>
+    </div>
+
+    <!-- Список друзей -->
+    <div style="width: 30%; align-self: start;">
+        <div class="user-block-body" style="margin-left: 20px">               
+            {% if myfriends %}
+            {% for friend in myfriends %}
+            <div id="link{{ friend.friend.pk}}" style="position: relative;">
+                <a href="{% url 'chat' friend.friend %}">
+                    <div class="friend-line">
+                        <img src="{{ friend.friend.userprofile.photo.url }}" alt=""> <span style="font-size: 14px;">{{ friend.friend.userprofile.firstname }} {{ friend.friend.userprofile.lastname }}</span> 
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+            {% else %}
+            <span style="font-size: 14px;">Пока нет друзей</span>
+            {% endif %}
+        </div>
+    </div>  
+
+</div>
+{% endif %}
+
+<!-- Подготовленные данные для парсинга в JSON -->
+<!-- Username отправителя и получателя -->
+{{ friend|json_script:"json-friend" }}
+{{ request.user.username|json_script:"json-user" }}
+
+<script>
+
+    // + Парсим необходимые данные из шаблона
+    const userName = JSON.parse(document.getElementById('json-user').textContent);
+    const friendName = JSON.parse(document.getElementById('json-friend').textContent);
+
+    // 1. Соединяемся с сервером со страницы отправителя и со страницы получателя
+    const chatSocket = new WebSocket('ws://'+ window.location.host + '/chat/' + friendName);
+    const chatSocketBack = new WebSocket('ws://'+ window.location.host + '/chat/' + userName);
+
+    // + При необходимости закрываем соединение с сервером
+    chatSocket.onclose = function(e) {
+        console.log('onclose')
+    }
+    chatSocketBack.onclose = function(e) {
+        console.log('onclose')
+    }
+
+    // 2. Собираем данные из input поля и отправляем JSON на сервер. После очищаем форму.
+    document.querySelector('#chat-submit').onclick = function(e) {
+        // данные из input поля
+        const messageInputDom = document.querySelector('#chat-input');
+        const message = messageInputDom.value;
+        console.log('Сообщение отправлено')
+        // отправляем данные на сервер в формате JSON
+        chatSocket.send(JSON.stringify({
+            'message': message,
+            'username': userName,
+            'friendname': friendName
+        }));
+        // очищаем форму
+        messageInputDom.value = '';
+        return false
+    };
+
+    // 3. Получаем данные от сервера через вебсокет, -->
+    // --> вставляя их в HTML документ в виде отправленного сообщения на странице отправителя
+    chatSocket.onmessage = function(e) {
+        // Выводим время возле логина
+        let dates = new Date(); 
+        // полученные данные с сервера
+        const data = JSON.parse(e.data);
+        // если в полученных данных username равно авторизированному пользователю, -->
+        // --> то опубликовать сообщение на странице отправителя
+        if (data.user == userName) {
+            // document.querySelector('#chat-messages').innerHTML += ('<p class="sender">' + data.user + ' ' + data.message + '</p>');
+            // document.querySelector('#chat-messages').innerHTML += ('<p class="sender">' + data.user + ' ' + data.message + '</p>');
+            document.querySelector('#chat-messages').innerHTML += ('<div class="sender flex"><div style="align-self:flex-start"><img class="photo-chat" src="{{ request.user.userprofile.photo.url }}" alt=""></div><div style="align-self:flex-start"><b>' + data.user + '</b> ' + dates.getHours() + ':' + dates.getMinutes() + '<br>' + data.message + '</div></div>');
+        } 
+    };
+    // И на странице получателя
+    chatSocketBack.onmessage = function(e) {
+        // Выводим время возле логина
+        let dates = new Date(); 
+        // полученные данные с сервера
+        const data = JSON.parse(e.data);
+        // если в полученных данных username равно получателю сообщения, -->
+        // --> то опубликовать сообщение на странице получателя
+        if (data.user == friendName) {
+            document.querySelector('#chat-messages').innerHTML += ('<div class="friend flex"><div style="align-self:flex-start"><img class="photo-chat" src="{{ thisfriend.userprofile.photo.url }}" alt=""></div><div style="align-self:flex-start"><b>' + data.user + '</b> ' + dates.getHours() + ':' + dates.getMinutes() + '<br>' + data.message + '</div></div>');
+        } 
+    };
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'main/base.html' %}
+
+{% load static %}
+{% block title %}Поиск{% endblock %}
+
+{% block content %}
+<div class="flex-between">
+    <h1>Поиск</h1> {{ count }}
+</div>
+
+
+
+{% for user in users %}
+<div id="f{{ user.user.pk }}" class="ind-friends">
+    <a href="{% url 'profile' user.user.username %}">
+        <div class="f-friend">
+            <div class="f-photo">
+                <img src="{{ user.photo.url }}" alt="">
+            </div>
+            <div class="f-user">
+                <div class="f-name">
+                    {{ user.firstname }} {{ user.lastname }}
+                </div>
+                @{{ user.user.username }}
+            </div>
+        </div>
+    </a>
+</div>
+
+{% endfor %}
+
+
+{% endblock %}

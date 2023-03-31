@@ -1,0 +1,47 @@
+.ind-friends {
+    position: relative;
+    background-color: #eeeeee;
+    padding: 10px;
+    margin-bottom: 20px;
+    transition: all .4s;
+}
+
+.ind-friends:hover {
+    box-shadow: 0 0 10px rgba(0, 153, 255, 0.4);
+    background-color: #b0dfff;
+}
+
+.f-friend {
+    display: flex;
+    align-items: center;
+}
+
+.f-photo {
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.f-user {
+    display: inline-block;
+}
+
+.f-name {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.f-delete {
+    font-size: 15px;
+    font-weight: bold;
+    position: absolute;
+    padding: 5px 10px;
+    right: 10px;
+    top: 10px;
+}
+
+.f-delete:hover {
+    background-color: #ff8d8d;
+    cursor: pointer;
+}

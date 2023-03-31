@@ -1,0 +1,17 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Выход{% endblock %}
+
+{% block content %}
+
+<div class="flex-box">
+    <div class="box">
+    <h1>
+        Вы вышли из аккаунта
+    </h1>
+    <p>Хотите войти снова?</p><br>
+    <a href="{% url 'log-in' %}"><button class="btn">Войти в аккаунт</button></a>
+    </div>
+</div>
+
+{% endblock %}

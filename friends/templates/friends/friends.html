@@ -1,0 +1,71 @@
+{% extends 'main/base.html' %}
+
+{% load static %}
+{% block title %}Мои друзья{% endblock %}
+
+{% block content %}
+<div class="flex-between">
+    {% if friends %}
+    <h1>Мои друзья</h1>
+    {% else %}
+    <h1>У Вас пока нет друзей</h1>
+    {% endif %}
+
+    <form class="form-control form-input100" style="margin-bottom: 20px; display: flex; align-items: center;" method="get" action="{% url 'search' %}">
+        <label for="search"><i class="fa-solid fa-magnifying-glass"></i></label> <input style="margin: 0 0 0 10px; padding: 5px 10px; font-size: 14px;" type="text" id="search" name="search" placeholder="Кого будем искать?">
+    </form>
+</div>
+
+{% if friends %}
+{% for friend in friends %}
+<div id="f{{ friend.friend.pk }}" class="ind-friends">
+
+    <a href="{% url 'profile' friend.friend.username %}">
+        <div class="f-friend">
+            <div class="f-photo">
+                <img src="{{ friend.friend.userprofile.photo.url }}" alt="">
+            </div>
+            <div class="f-user">
+                <div class="f-name">
+                    {{ friend.friend.userprofile.firstname }} {{ friend.friend.userprofile.lastname }}
+                </div>
+                @{{ friend.friend.username }}
+            </div>
+        </div>
+        </a>
+
+        <div title="Удалить из друзей?" id="{{ friend.friend.pk }}" class="f-delete" onClick="delfriendprofile(this.id)">
+            <i class="fa-solid fa-xmark"></i>
+        </div>
+
+</div>
+{% endfor %}
+{% else %}
+<p>Найдите друзей, воспользовавшись поиском</p>
+{% endif %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script>
+        // Удалить из друзей в профиле
+        function delfriendprofile(user){
+        $.ajax ({
+            type: "GET",
+            url: '/friends/del',
+            data: {
+                "user_id": user,
+            },
+            dataType: 'text',
+            cache: false,
+            success: function(data) {
+                if (data == 'yesminus') {
+                    console.log('Вы отписались');
+                    let idlink = '#f' + user 
+                    $(idlink).slideUp()
+                } else {console.log('Ошибка удаление');}
+                }
+            });
+        }
+
+</script>
+
+{% endblock %}
